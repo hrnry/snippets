@@ -33,3 +33,5 @@ if __name__ == '__main__':
     with open(output_path, mode='xb') as f:
         print('output: ' + output_path)
         f.write(data)
+        f.flush()
+        os.fsync(f.fileno())
