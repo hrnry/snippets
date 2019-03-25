@@ -52,7 +52,10 @@ if __name__ == '__main__':
     print('# Start')
     target_url = args[1]
     opts = Options()
-    opts.add_argument('-headless')
+    opts.add_argument('--headless')
+    opts.add_argument('--safe-mode')
+    opts.add_argument('--new-instance')
+    opts.add_argument('--no-remote')
     driver = webdriver.Firefox(executable_path='geckodriver', options=opts)
     driver.get(target_url)
     title = driver.title
@@ -63,20 +66,20 @@ if __name__ == '__main__':
     driver.execute_script(mkInjectJS(elm_id))
 
 ########## TVer
-    xpath = '//div[@id="end-alert"]/div/a'
     try:
+        xpath = '//div[@id="end-alert"]/div/a'
         print('# end-alert: ' + driver.find_element_by_xpath(xpath).get_attribute('href'))
         driver.find_element_by_xpath(xpath).click()
         driver.execute_script(mkInjectJS(elm_id))
     except:
         pass
 
-    xpath = '//section[@class="video-section"]/div[@class="title"]/div[@class="inner"]'
-    title = driver.find_element_by_xpath(xpath + '/h1').text
-    summary = driver.find_element_by_xpath(xpath + '/p/span[@class="summary"]').text
-    title = sanitize(title + '_' + summary)
-
     try:
+        xpath = '//section[@class="video-section"]/div[@class="title"]/div[@class="inner"]'
+        WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, xpath)))
+        title = driver.find_element_by_xpath(xpath + '/h1').text
+        summary = driver.find_element_by_xpath(xpath + '/p/span[@class="summary"]').text
+        title = sanitize(title + '_' + summary)
         xpath = '//div[@id="enquete"]/div[@class="eqform"]/iframe'
         WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, xpath)))
         driver.switch_to.frame(driver.find_element_by_xpath(xpath))
